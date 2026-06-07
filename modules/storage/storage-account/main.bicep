@@ -1,5 +1,5 @@
 metadata version = '1.0.1'
-metadata description = 'Core storage account for shared blob data and artifacts.'
+metadata description = 'Core storage account for shared blob data and artifacts. author: Jeff Shurak'
 
 @description('Prefix used in the storage account name (for example, jscorestorage).')
 param namePrefix string = 'sa'
