@@ -40,6 +40,6 @@ jobs:
           inlineScript: |
             # Publish single module with version tag
             az bicep publish \
-              --file modules/storage.bicep \
+              --file modules/storage/storage-account/main.bicep \
               --target "br:${{ secrets.ACR_NAME }}.azurecr.io/bicep/modules/storage:v1.0.1" \
               --with-source
