@@ -1,0 +1,45 @@
+name: Publish Bicep Module to ACR
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'modules/**' # Triggers only when files in the modules folder change
+  workflow_dispatch: # Allows manual triggers
+
+permissions:
+  id-token: write # Required for requesting the JWT / OIDC authentication
+  contents: read  # Required for actions/checkout
+
+env:
+  AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+  AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+  AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+  ACR_NAME: ${{ SECRETS.AZURE_REGISTRY_NAME }}
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment: storage
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Azure Login via OIDC
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Publish Bicep Module
+        uses: azure/cli@v2
+        with:
+          azcliversion: latest
+          inlineScript: |
+            # Publish single module with version tag
+            az bicep publish \
+              --file modules/storage.bicep \
+              --target "br:${{ secrets.ACR_NAME }}.azurecr.io/bicep/modules/{{env.NAME}}:{{env.VERSION}}" \
+              --with-source
