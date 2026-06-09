@@ -1,3 +1,4 @@
+metadata version = '1.0.0'
 metadata description = 'Private endpoint for Azure Blob storage on an existing subnet.'
 
 @description('Full ARM resource ID of the subnet that hosts the private endpoint.')
