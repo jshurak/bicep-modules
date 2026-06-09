@@ -1,4 +1,4 @@
-metadata version = '1.0.0'
+metadata version = '1.5.0'
 metadata description = 'Linux Flex Consumption function app with blob deployment storage and user-assigned identity.'
 
 @description('Explicit function app name. When empty, a name is generated from namePrefix and the resource group id.')
@@ -34,6 +34,28 @@ param appInsightInstrumentationKey string = ''
 @description('Full ARM resource ID of the virtual network to deploy the function app into.')
 param virtualNetworkSubnetResourceId string
 
+@description('Runtime name for the function app.')
+param runtimeName string
+
+@description('Runtime version for the function app.')
+param runtimeVersion string
+
+
+@description('Maximum instance count for the function app.')
+param maximumInstanceCount int
+
+@allowed([
+  512
+  2048
+  4096
+])
+@description('Instance memory for the function app.')
+param instanceMemoryMB int
+
+
+@description('Always on for the function app.')
+param alwaysOn bool = false
+
 
 @allowed([
   'Disabled'
@@ -64,12 +86,12 @@ module functionApp 'br/public:avm/res/web/site:0.23.1' = {
         }
       }
       runtime: {
-        name: 'python'
-        version: '3.13'
+        name: runtimeName
+        version: runtimeVersion
       }
       scaleAndConcurrency: {
-        maximumInstanceCount: 2
-        instanceMemoryMB: 512
+        maximumInstanceCount: maximumInstanceCount
+        instanceMemoryMB: instanceMemoryMB
       }
     }
     managedIdentities: {
@@ -80,7 +102,7 @@ module functionApp 'br/public:avm/res/web/site:0.23.1' = {
     }
     publicNetworkAccess: publicNetworkAccess
     siteConfig: {
-      alwaysOn: false
+      alwaysOn: alwaysOn
     }
     virtualNetworkSubnetResourceId: virtualNetworkSubnetResourceId
     configs: [
